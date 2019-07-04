@@ -1,0 +1,40 @@
+---
+name: 签出
+description: 用于从Git仓库中签出代码
+parameters:
+- id: executor
+  name: 命令执行器
+  description: 执行时会通过命令行参数 git_executor, maven_executor 和 npm_executor 自动创建默认的 executor
+    实例，可通过 $0.executor 引用。
+  default: "$0.executor"
+  type: text
+  required: true
+- id: url
+  name: Git 仓库地址
+  type: text
+  required: true
+- id: user
+  name: Git 仓库用户名
+  type: text
+  required: true
+- id: password
+  name: Git 仓库密码
+  type: text
+  required: true
+- id: branch
+  name: Git 仓库分支
+  type: text
+  required: true
+- id: directory
+  name: Git 仓库本地目录
+  type: text
+  required: true
+- id: tag
+  name: 是否作为标记处理
+  description: 用于标记 branch 参数指定的是标记(通常用户版本标记)
+  type: bool
+  default: false
+- id: reset
+  name: 是否丢弃本地分支下的修改
+  type: bool
+  default: false

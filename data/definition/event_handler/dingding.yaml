@@ -1,0 +1,17 @@
+---
+name: 钉钉消息
+description: 用于通过钉钉群机器人发送消息
+parameters:
+- id: access_token
+  name: Access Token
+  type: text
+  required: true
+- id: selector
+  name: 消息选择器
+  description: 从 "messages" 中选择要发送的消息，当找不到匹配的消息时，会通过 "*" 从预定义消息列表中查找消息。
+  type: text
+  required: true
+- id: messages
+  name: 预定义的消息列表
+  type: yaml
+  required: true
