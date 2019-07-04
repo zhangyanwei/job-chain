@@ -1,11 +1,8 @@
 import collections
-import glob
 import os
 import re
 import urllib.request as request
 from collections import deque
-
-from .common.repository import Repository
 
 
 def read_data(path):
@@ -15,13 +12,6 @@ def read_data(path):
     else:
         with open(path, 'rb') as f:
             return f.read()
-
-
-def available_modules(repository: Repository, modules: list, pattern: str):
-    _available_modules = [re.sub(r'.+[/\\]({})$'.format(_pattern_to_regex(pattern)), '\\1', m) for m in glob.glob(f'{repository.directory}/{pattern}')]
-    if modules is not None:
-        _available_modules = [m for m in modules if m in _available_modules]
-    return _available_modules
 
 
 def to_native(path):

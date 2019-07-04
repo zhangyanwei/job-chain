@@ -2,11 +2,10 @@ import inspect
 import re
 from typing import Any, Callable
 
-import event
-import function
-import step
+import jobchain.event as events
+import jobchain.function as functions
+import jobchain.step as steps
 from ._utils import get_nested, optional
-from .common.executor import Executor
 from .exception import StepError, ParseError
 from .job_description import JobDescription
 from .logger import logger
@@ -20,7 +19,7 @@ INTERNAL_VARIABLE_PART = r'(?:[\$\w]+|\[[\w\.]+\])'
 
 class JobExecutor:
 
-    def __init__(self, executor: Executor,  job_description: JobDescription, repository_name: str, job_name: str, variables: dict=None):
+    def __init__(self, job_description: JobDescription, repository_name: str, job_name: str, variables: dict=None):
         self._job_description = job_description
         self._repository_name = repository_name
         self._job_name = job_name
@@ -31,8 +30,7 @@ class JobExecutor:
                 'context': {
                     'repository': repository_name,
                     'job': job_name
-                },
-                'executor': executor
+                }
             },
             'variables': self._parse_variables(job_description.variable_definition(), variables)
         }
@@ -53,7 +51,7 @@ class JobExecutor:
 
     def _exec_step(self, name, alias, arguments):
         logger.info(f"Running {name}{optional(alias).format('.{}')}")
-        step_runner = getattr(step, name, None)
+        step_runner = getattr(steps, name, None)
         if step_runner is None:
             logger.error(f"step runner [{name}] not found. {optional(alias).format('alis: {}')}")
             raise StepError(name, alias, 'Not found')
@@ -79,7 +77,7 @@ class JobExecutor:
     def _exec_handler(self, event_name: str, scoped_variables: dict=None, step_name: str=None):
         error_handlers = self._job_description.event_handlers(event_name, self._repository_name, self._job_name, step_name)
         for handler in error_handlers:
-            event_handler = getattr(event, handler['name'], None)
+            event_handler = getattr(events, handler['name'], None)
             if event_handler is None:
                 raise NotImplementedError(f'Event handler \'{handler.name}\' not implemented yet.')
             parsed_args = {name: self._resolve_context(value, scoped_variables) for name, value in handler.get('args', {}).items()}
@@ -120,7 +118,7 @@ class JobExecutor:
         if func_name == 'eval':
             ret_val = parameters[0] if len(parameters) == 1 else parameters
         else:
-            func = getattr(function, func_name, None)
+            func = getattr(functions, func_name, None)
             if not func:
                 raise NotImplementedError(f'function "{func_name}" not supported yet.')
             ret_val = func.run(*parameters)

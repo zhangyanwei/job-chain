@@ -2,7 +2,6 @@ import argparse
 import re
 import sys
 
-from .common.executor import LocalExecutor
 from .job_description import JobDescription
 from .job_executor import JobExecutor
 
@@ -39,12 +38,6 @@ def create_parser():
     parser.add_argument('-f', '--file', required=True, help='file path/url of job description')
     parser.add_argument('-r', '--repository', required=True, help='repository name')
     parser.add_argument('-j', '--job', required=True, help='job name')
-    git_group = parser.add_argument_group(
-        'executor parameters, '
-        'allowed overwrite them if execute this script in windows system or the executors not in path system environment')
-    git_group.add_argument('--git-executor', default='git {}', help='the executor of git')
-    git_group.add_argument('--maven-executor', default='mvn {}', help='the executor of maven')
-    git_group.add_argument('--npm-executor', default='npm {}', help='the executor of npm')
     env_group = parser.add_argument_group(
         'overwrite the json attributes, or supply the env variables')
     env_group.add_argument('-d', nargs=argparse.ONE_OR_MORE, action=EnvironmentVariableAction, default=dict(),
@@ -58,9 +51,8 @@ def create_parser():
 
 def _execute(**kwargs):
     args = kwargs.copy()
-    executor = LocalExecutor(git_executor=args["git_executor"], maven_executor=args["maven_executor"], npm_executor=args["npm_executor"])
     job_description = JobDescription(args["file"], args.get('d'))
-    job_executor = JobExecutor(executor, job_description, args['repository'], args.get('job'), args.get('e'))
+    job_executor = JobExecutor(job_description, args['repository'], args.get('job'), args.get('e'))
     job_executor.execute()
 
 
