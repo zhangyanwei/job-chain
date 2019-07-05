@@ -86,7 +86,7 @@ DEVOPS_CONFIG_URL="http://192.168.1.2:3000/devops/devops-confs/raw/develop/jenki
 # default parameters
 PARAM_DINGDING_TOKEN="xxxxxxx"
 PARAM_SONAR_HOST="http://192.168.1.2:9000"
-PARAM_SONAR_AUTH_TOKEN="907e4b0e37e6873fcc06e2d97afc2bc2ccc2c5eb"
+PARAM_SONAR_AUTH_TOKEN="xxxxxx"
 PARAM_BUILD_ICON_FAIL="http://192.168.1.2:8099/jenkins/static/20cbeeb5/images/48x48/red.png"
 
 # given parameters (提取环境变量)
@@ -116,10 +116,7 @@ EOF
 )
 fi
 
-# 在com.zhongwang.cloud.platform.bamboo.test.listener.Bootstrap.java中
-# 会执行 初始化/恢复 数据库的python脚本文件。
-# 但不同的环境下python的执行文件的表现形式可能并不相同，
-# 也可能不在PATH下，可通过环境变量PYTHON_EXECUTABLE设置或通过JVM参数-Dpython.executable设置。
+# Python 可执行文件
 export PYTHON_EXECUTABLE=python3
 
 # 直接从git仓库中下载jenkins.py和dockercompose.py
