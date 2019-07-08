@@ -50,7 +50,35 @@ inherit the parameters and allowed you override them.
 
 * **variable**  
 Allow define the variables that can be shared in steps, also you can override them by pass the command arguments with 
-`-e` option. 
+`-e` option.   
+For each variable, contains two options, separately are `parser` and `value`.
+    * **parser**  
+     It's a function expression or a string contains a function expression(with force convert the return value of the 
+     function into a string). It allowed placing the value into the expression with the placeholder `{}`.  
+     For example: `$split({});` will parse the input value into an array; `$split({}); in a string` will pass the input 
+     value into the function `split`, then convert its return value into a string, finally, will insert the return value
+     into the function expression position.  
+     Or even more complex, `$eval({}[:-7] if {}.endswith('-plugin') else {});`, do you know what does it meaning?
+     * **value**  
+     It can be a variable expression or a valid object defined as YAML format. Will not use the predefined value in YAML
+     if passed the same variable from the command.
+
+### Variable expressions
+
+There are three types of variable expressions, separately are internal variable, variable and function expressions.
+
+* **internal variable**  
+Format: `'\$\{((\d+)?(?:\.(?:\w+|\[[\w\.]+\]))*)\}'`  
+Explain: `${stepIndex.keys}`
+Example: `${0.context.repository}`, `${3.[172.16.9.52].images}`  
+* **variable**  
+Format: `\${([a-zA-Z][\w\-_]+)}`  
+Explain: `${variable_name}`  
+Example: `${release_version}`  
+* **function**  
+Format: `\$([a-zA-Z_]+)\((.*)\);`  
+Explain: `$function_name(...arguments);`  
+Example: `$split('192.168.12.40 192.168.12.41 192.168.12.42');`  
 
 ## Installation
 
@@ -119,11 +147,11 @@ fi
 # Python 可执行文件
 export PYTHON_EXECUTABLE=python3
 
-# 直接从git仓库中下载jenkins.py和dockercompose.py
+# 直接从git仓库中下载最新的脚本
 pip3 install -U ${DEVOPS_SCRIPT_URL} -i https://mirrors.aliyun.com/pypi/simple
 
-# 执行jenkins.py脚本，并附带参数
-cmd="${PYTHON_EXECUTABLE} -m jenkins -f ${DEVOPS_CONFIG_URL} -r zap-services -j ${PARAM_JOB} --maven-executor \"/home/maven/bin/mvn {}\" ${ENV}"
+# 执行脚本，并附带参数
+cmd="${PYTHON_EXECUTABLE} -m jobchain -f ${DEVOPS_CONFIG_URL} -r xxx-services -j ${PARAM_JOB} --maven-executor \"/home/maven/bin/mvn {}\" ${ENV}"
 
 echo "the command is: ${cmd}"
 eval ${cmd}
