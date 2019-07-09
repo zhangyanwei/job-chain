@@ -1,3 +1,5 @@
+
+
 ## How to use it.
 
 Fork it, add your steps' scripts into `jobchain/step` folder.
@@ -88,24 +90,24 @@ There are three types of variable expressions, separately are internal variable,
           jar: ${2.auth-service.path}
   ```
   In the above example, the first step is `checkout`, this step will return a dict contains a key `directory` to represent the full directory path of the checked out repository, can pass it into step `maven` by reference it with an expression `${1.directory}`. The step `docker_build` accept an argument `jar`, its value is referencing to the return value of the step `maven`.  
-  About Scope/Local variable, its lifecycle is limited in step, for example, can reference an error message in event handler with an expression `${.error.message}`.
-  \
-  Predefined global variables
+  About Scope/Local variable, its lifecycle is limited in step, for example, can reference an error message in event handler with an expression `${.error.message}`.  
+  Predefined global variables  
+  
   | Variable Name           | Description     |
   | ---                     | ---             |
   | ${0.context.repository} | Repository Name |
   | ${0.context.job}        | Job Name        |
 
 * **variable**  
-  _Format_: `\${([a-zA-Z][\w\-_]+)}`
-  _Explain_: `${variable_name}`
-  _Example_: `${release_version}`
+  _Format_: `\${([a-zA-Z][\w\-_]+)}`  
+  _Explain_: `${variable_name}`  
+  _Example_: `${release_version}`  
   This kind of expressions is for reference to the environment variables which accepted from the command line.
 
 * **function**  
-  _Format_: `\$([a-zA-Z_]+)\((.*)\);`
-  _Explain_: `$function_name(...arguments);`
-  _Example_: `$split('192.168.12.40 192.168.12.41 192.168.12.42');`
+  _Format_: `\$([a-zA-Z_]+)\((.*)\);`  
+  _Explain_: `$function_name(...arguments);`  
+  _Example_: `$split('192.168.12.40 192.168.12.41   192.168.12.42');`  
   Also allowed define the custom functions for different purposes, the function scripts are placed into folder `function`.  
   Only a builtin function named `eval` not placed into folder `function`, can use it to execute a snippet of python script.
   For example: `$eval({}[:-7] if {}.endswith('-plugin') else {});`
