@@ -72,7 +72,7 @@ class JobDescription:
         job = repository[job_name]
         merged = _recursive_update(
             {step: step_template for step, step_template in self._template.items() if step in job.keys()},
-            job
+            {step: params or {} for step, params in job.items()}
         )
         # return as the original sort.
         return {step: merged.get(step) for step, params in job.items()}
@@ -91,7 +91,7 @@ class JobDescription:
         items.append(job)
 
         if step_name:
-            items.append(job[step_name])
+            items.append(job[step_name] or {})
         items.reverse()
         return items
 
