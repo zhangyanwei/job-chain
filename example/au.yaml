@@ -8,9 +8,12 @@ repositories:
       maven:
         executor: ${1.executor}
         repository: ${2.repository}
-      command.run:
-        cmd: nohup java -jar target/weather-${3.version}.jar &
+      command.copy:
+        # I think I need to write a step to make the copy step more readale.
+        cmd: scp -i ${remote_key} target/weather-${3.version}.jar ${remote_user}@${remote_address}:${remote_directory}/${0.context.repository}/au-weather.jar
         cwd: ${2.repository._directory}
+      command.run:
+        cmd: nohup java -jar ${remote_directory}/${0.context.repository}/au-weather.jar &
   au-pets:
     upgrade:
       prepare_environment:
@@ -18,6 +21,14 @@ repositories:
       npm_build:
         executor: ${1.executor}
         repository: ${2.repository}
+      command.copy:
+        # Create an archive file, then copy it to the remote server.
+        cmd: cd dist/ && tar -czvf ../au-pets.tar.gz . && cd .. && scp -i ${remote_key} au-pets.tar.gz ${remote_user}@${remote_address}:${remote_directory}/${0.context.repository}/au-pets.tar.gz
+        cwd: ${2.repository._directory}
+      command.run:
+        #  Extract it to a specified directory.
+        cmd: mkdir -p content && tar -xvf au-pets.tar.gz -C content
+        cwd: ${remote_directory}/${0.context.repository}
 
 # Using the context variable to make checkout step as a template.
 template:
@@ -26,8 +37,20 @@ template:
     url: https://github.com/zhangyanwei/${0.context.repository}.git
     branch: master
     directory: source/${0.context.repository}
+  command.run:
+    host: ${remote_address}
+    user: ${remote_user}
+    private_key: ${remote_key}
 
 # Define variables for reuse, can overwrite it by the '-e' option.
 variable:
   maven_executor:
     value: /Users/lovejaja/Applications/apache-maven-3.6.1/bin/mvn
+  remote_user:
+    value: ec2-user
+  remote_address:
+    value: ec2-13-112-199-140.ap-northeast-1.compute.amazonaws.com
+  remote_directory:
+    value: /home/ec2-user/webs
+  remote_key:
+    value: /Users/lovejaja/Downloads/tokyo.pem
