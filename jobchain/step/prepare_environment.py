@@ -1,7 +1,7 @@
 from ._executor import ProxyExecutor
 
 
-def run(executor: dict):
+def run(executor: dict = None):
     return {
-        'executor': ProxyExecutor(**executor)
+        'executor': ProxyExecutor(**executor or {})
     }

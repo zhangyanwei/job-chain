@@ -1,0 +1,9 @@
+repositories:
+  job-chain:
+    docker-build:
+      prepare_environment:
+      checkout:
+        executor: ${1.executor}
+        url: https://github.com/zhangyanwei/job-chain.git
+        branch: master
+        directory: example/data/job-chain
