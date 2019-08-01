@@ -1,0 +1,33 @@
+repositories:
+  au-weather:
+    upgrade:
+      prepare_environment:
+        executor:
+          maven_executor: ${maven_executor} {}
+      checkout:
+      maven:
+        executor: ${1.executor}
+        repository: ${2.repository}
+      command.run:
+        cmd: nohup java -jar target/weather-${3.version}.jar &
+        cwd: ${2.repository._directory}
+  au-pets:
+    upgrade:
+      prepare_environment:
+      checkout:
+      npm_build:
+        executor: ${1.executor}
+        repository: ${2.repository}
+
+# Using the context variable to make checkout step as a template.
+template:
+  checkout:
+    executor: ${1.executor}
+    url: https://github.com/zhangyanwei/${0.context.repository}.git
+    branch: master
+    directory: source/${0.context.repository}
+
+# Define variables for reuse, can overwrite it by the '-e' option.
+variable:
+  maven_executor:
+    value: /Users/lovejaja/Applications/apache-maven-3.6.1/bin/mvn
