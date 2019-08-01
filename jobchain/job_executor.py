@@ -12,8 +12,9 @@ from .logger import logger
 
 INTERNAL_VARIABLE_PATTERN = r'\$\{((\d+)?(?:\.(?:\w+|\[[\w\.]+\]))*)\}'
 VARIABLE_PATTERN = r'\${([a-zA-Z][\w\-_]+)}'
-ALL_VARIABLE_PATTERN = r'(\$\{\d*(?:\.(?:\w+|\[[\w\.]+\]))*\}|\$\{[a-zA-Z][\w\-_]+\})'
 FUNC_PATTERN = r'\$([a-zA-Z_]+)\((.*)\);'
+
+ALL_VARIABLE_PATTERN = r'(\$\{\d*(?:\.(?:\w+|\[[\w\.]+\]))*\}|\$\{[a-zA-Z][\w\-_]+\})'
 INTERNAL_VARIABLE_PART = r'(?:[\$\w]+|\[[\w\.]+\])'
 
 
@@ -125,13 +126,13 @@ class JobExecutor:
         return str(ret_val) if to_str else ret_val
 
     def _convert_variable(self, value, scoped_variables: dict=None):
-        matcher = re.match(INTERNAL_VARIABLE_PATTERN, value)
+        matcher = re.fullmatch(INTERNAL_VARIABLE_PATTERN, value)
         if matcher:
             return self._internal_variable_matched(matcher, False, scoped_variables)
-        matcher = re.match(VARIABLE_PATTERN, value)
+        matcher = re.fullmatch(VARIABLE_PATTERN, value)
         if matcher:
             return self._variable_matched(matcher, False)
-        matcher = re.match(FUNC_PATTERN, value)
+        matcher = re.fullmatch(FUNC_PATTERN, value)
         if matcher:
             return self._func_matched(matcher, False)
         # treat as a string replace holder
@@ -169,7 +170,7 @@ class JobExecutor:
 
         def value_resolver(value):
             if type(value) == str:
-                matcher = re.match(VARIABLE_PATTERN, value)
+                matcher = re.fullmatch(VARIABLE_PATTERN, value)
                 if matcher:
                     return self._variable_matched(matcher, False, variables)
             return value
@@ -179,7 +180,7 @@ class JobExecutor:
                 v = variables.get(name, value_resolver(value))
                 if parser is None:
                     return v
-                matcher = re.match(FUNC_PATTERN, parser)
+                matcher = re.fullmatch(FUNC_PATTERN, parser)
                 if matcher:
                     return func_matcher_resolver(matcher, v)
                 return re.sub(FUNC_PATTERN, lambda m: func_matcher_resolver(m, v, True), parser)
