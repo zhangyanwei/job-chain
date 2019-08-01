@@ -138,4 +138,4 @@ python -m jobchain -h
 
 ## Examples
 
-I've created an example put under [`example/devops`](job-chain/tree/example/devops) branch.
+I've created an example put under [`example/devops`](https://github.com/zhangyanwei/job-chain/tree/example/devops) branch.
